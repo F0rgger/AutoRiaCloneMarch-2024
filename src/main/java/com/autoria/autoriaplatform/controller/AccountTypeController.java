@@ -16,13 +16,13 @@ public class AccountTypeController {
         this.accountTypeService = accountTypeService;
     }
 
-    // Получить тип аккаунта по имени
+
     @GetMapping("/{name}")
     public AccountType getAccountTypeByName(@PathVariable String name) {
         return accountTypeService.getAccountTypeByName(name);
     }
 
-    // Создать новый тип аккаунта
+
     @PostMapping("/create")
     public AccountType createAccountType(@RequestBody AccountType accountType) {
         return accountTypeService.saveAccountType(accountType);

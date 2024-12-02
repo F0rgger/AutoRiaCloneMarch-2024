@@ -1,14 +1,9 @@
+
 package com.autoria.autoriaplatform.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import com.autoria.autoriaplatform.enums.EAccountType;
+import jakarta.persistence.*;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,67 +15,70 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Обозначаем поле как Primary Key
+    private Long id;
 
     private String name;
     private String email;
     private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role; // связь с ролью
-
-    @ManyToOne
-    @JoinColumn(name = "account_type_id")
-    private AccountType accountType; // связь с типом аккаунта
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<Advertisement> advertisements; // объявления, связанные с пользователем
+    private Set<Advertisement> advertisements;
 
     @ManyToOne
     private Permission permission;
 
-    // Реализация методов UserDetails
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private EAccountType accountType = EAccountType.BASIC;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Возвращаем роль как авторитет
         Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(role.getName())); // Предполагаем, что role.getName() возвращает строку с ролью (например, "ROLE_USER")
+        for (Role role : roles) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        }
         return authorities;
     }
 
     @Override
     public String getUsername() {
-        return email; // Используем email как уникальный идентификатор пользователя
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Предположим, что аккаунт никогда не истекает
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Предположим, что аккаунт не заблокирован
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Предположим, что учетные данные никогда не истекают
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Предположим, что аккаунт всегда активен
+        return true;
+    }
+
+    public boolean canAddAdvertisement() {
+        return this.accountType == EAccountType.PREMIUM || advertisements.size() < 1;
     }
 }

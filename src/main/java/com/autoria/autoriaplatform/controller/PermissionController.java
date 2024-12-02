@@ -1,3 +1,4 @@
+
 package com.autoria.autoriaplatform.controller;
 
 import com.autoria.autoriaplatform.model.Permission;
@@ -16,13 +17,11 @@ public class PermissionController {
         this.permissionService = permissionService;
     }
 
-    // Создание разрешения
     @PostMapping("/create")
     public Permission createPermission(@RequestParam String name) {
         return permissionService.createPermission(name);
     }
 
-    // Получить разрешение по имени
     @GetMapping("/{name}")
     public Permission getPermissionByName(@PathVariable String name) {
         return permissionService.getPermissionByName(name);

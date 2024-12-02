@@ -17,13 +17,13 @@ public class CarBrandController {
         this.carBrandService = carBrandService;
     }
 
-    // Получить марку автомобиля по имени
+
     @GetMapping("/{name}")
     public CarBrand getCarBrandByName(@PathVariable String name) {
         return carBrandService.getCarBrandByName(name);
     }
 
-    // Создать новую марку автомобиля
+
     @PostMapping("/create")
     public CarBrand createCarBrand(@RequestBody CarBrand carBrand) {
         return carBrandService.saveCarBrand(carBrand);

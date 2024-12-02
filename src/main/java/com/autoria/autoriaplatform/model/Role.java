@@ -1,15 +1,13 @@
+
 package com.autoria.autoriaplatform.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;  // Обратите внимание на правильный импорт для @Id
-import jakarta.persistence.OneToMany;
+import com.autoria.autoriaplatform.enums.ERole;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -17,20 +15,46 @@ import java.util.Set;
 @Setter
 public class Role {
 
-    @Id  // Используем правильную аннотацию для идентификатора
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // роль (например, "Покупець", "Продавець", "Менеджер", "Адміністратор")
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private ERole roleName;
 
-    @OneToMany(mappedBy = "role")
-    private Set<User> users; // связанные пользователи
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    private Set<Permission> permissions = new HashSet<>();
 
-    @OneToMany(mappedBy = "role")
-    private Set<Permission> permissions; // разрешения для этой роли
+    public Role() {
+    }
 
-    // Возвращаем список ролей в формате GrantedAuthority
+    public Role(ERole roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getName() {
+        return roleName.name();
+    }
+
     public Set<SimpleGrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + name));
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + getName()));
+        for (Permission permission : permissions) {
+            authorities.add(new SimpleGrantedAuthority(permission.getName()));
+        }
+        return authorities;
+    }
+
+    public void addPermission(Permission permission) {
+        permissions.add(permission);
+    }
+
+    public void removePermission(Permission permission) {
+        permissions.remove(permission);
     }
 }

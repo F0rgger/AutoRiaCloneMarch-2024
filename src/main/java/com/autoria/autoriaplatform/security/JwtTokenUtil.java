@@ -25,10 +25,13 @@ public class JwtTokenUtil {
     }
 
     public String getUsernameFromToken(String token) {
+        if (token == null) {
+            throw new IllegalArgumentException("Token cannot be null");
+        }
         JwtParser jwtParser = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .build(); // Build the JwtParser using the parserBuilder API
-        Claims claims = jwtParser.parseClaimsJws(token).getBody(); // Parse the token and extract claims
+        Claims claims = jwtParser.parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
 
@@ -36,10 +39,11 @@ public class JwtTokenUtil {
         try {
             JwtParser jwtParser = Jwts.parser()
                     .setSigningKey(jwtSecret)
-                    .build(); // Build the JwtParser using the parserBuilder API
+                    .build();
             jwtParser.parseClaimsJws(token); // Parse the token
             return true;
-        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException |
+                 IllegalArgumentException e) {
             return false;
         }
     }

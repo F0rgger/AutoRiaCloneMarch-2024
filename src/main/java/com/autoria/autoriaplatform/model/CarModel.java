@@ -13,11 +13,10 @@ import lombok.Setter;
 public class CarModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Генерация значения ключа
-    private Long id;  // Первичный ключ
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String name;  // Название модели автомобиля
+    private String name;
 
-    // Другие поля и методы (например, геттеры и сеттеры)
 
 }

@@ -17,13 +17,13 @@ public class CarModelController {
         this.carModelService = carModelService;
     }
 
-    // Получить модель автомобиля по имени
+
     @GetMapping("/{name}")
     public CarModel getCarModelByName(@PathVariable String name) {
         return carModelService.getCarModelByName(name);
     }
 
-    // Создать новую модель автомобиля
+
     @PostMapping("/create")
     public CarModel createCarModel(@RequestBody CarModel carModel) {
         return carModelService.saveCarModel(carModel);

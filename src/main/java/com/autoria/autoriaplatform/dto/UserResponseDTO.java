@@ -10,11 +10,13 @@ public class UserResponseDTO {
     private String name;
     private String email;
 
-    // Конструктор с параметрами
+
     public UserResponseDTO(Long id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
     }
-    public UserResponseDTO() {}
+
+    public UserResponseDTO() {
+    }
 }

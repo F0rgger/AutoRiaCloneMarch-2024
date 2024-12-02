@@ -1,15 +1,20 @@
 package com.autoria.autoriaplatform.config;
 
+import com.autoria.autoriaplatform.model.User;
+import com.autoria.autoriaplatform.repository.UserRepository;
 import com.autoria.autoriaplatform.security.JwtAuthenticationEntryPoint;
-import com.autoria.autoriaplatform.security.JwtAuthenticationFilter;
 import com.autoria.autoriaplatform.security.JwtTokenUtil;
-import com.autoria.autoriaplatform.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -18,30 +23,35 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final UserService userService;
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final JwtTokenUtil jwtTokenUtil;
+    private final UserRepository userRepository;
 
-    public SecurityConfig(UserService userService, JwtAuthenticationEntryPoint unauthorizedHandler, JwtTokenUtil jwtTokenUtil) {
-        this.userService = userService;
+    public SecurityConfig(JwtAuthenticationEntryPoint unauthorizedHandler, @Lazy JwtTokenUtil jwtTokenUtil, UserRepository userRepository) {
         this.unauthorizedHandler = unauthorizedHandler;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.userRepository = userRepository;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Use the new style with HttpSecurity configuration
-        http.csrf(csrf -> csrf.disable())  // Disable CSRF
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler)) // Set unauthorized handler
+        http.csrf(csrf -> csrf.disable())
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/auth/**").permitAll() // Permit access to authentication and registration endpoints
-                        .requestMatchers("/api/users/**").hasRole("USER") // Allow only users with USER role
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // Allow only users with ADMIN role
-                        .anyRequest().authenticated() // Authenticate all other requests
-                )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenUtil), JwtAuthenticationFilter.class); // Add JWT filter
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/**").hasRole("USER")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
+    }
+
+    @Bean
+    @Lazy
+    public JwtTokenUtil jwtTokenUtil() {
+        return new JwtTokenUtil();
     }
 
     @Bean
@@ -52,8 +62,14 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userService) // Use UserService as UserDetailsService
-                .passwordEncoder(passwordEncoder());
+        authenticationManagerBuilder.userDetailsService(new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                User user = userRepository.findByEmail(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+                return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getAuthorities());
+            }
+        }).passwordEncoder(passwordEncoder());
         return authenticationManagerBuilder.build();
     }
 }

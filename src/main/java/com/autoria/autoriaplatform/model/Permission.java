@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter  // Генерирует геттеры для всех полей
-@Setter  // Генерирует сеттеры для всех полей
+@Getter
+@Setter
 public class Permission {
 
     @Id
@@ -19,5 +19,4 @@ public class Permission {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    // Lombok автоматически генерирует конструкторы, геттеры и сеттеры
 }

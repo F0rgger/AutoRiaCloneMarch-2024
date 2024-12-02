@@ -1,3 +1,4 @@
+
 package com.autoria.autoriaplatform.model;
 
 import jakarta.persistence.*;
@@ -16,18 +17,30 @@ public class Advertisement {
     private String title;
     private String description;
     private Double price;
+    private String text;
+    private String currency;
+    private Double exchangeRate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user; // связь с пользователем, который разместил объявление
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "car_brand_id")
-    private CarBrand carBrand; // связь с маркой автомобиля
+    private CarBrand carBrand;
 
     @ManyToOne
     @JoinColumn(name = "car_model_id")
-    private CarModel carModel; // связь с моделью автомобиля
+    private CarModel carModel;
 
-    private String status; // статус объявления (например, "Активне", "Неактивне")
+    private String status;
+
+    private int totalViews;
+    private int dailyViews;
+    private int weeklyViews;
+    private int monthlyViews;
+
+    @ManyToOne
+    @JoinColumn(name = "region_id")
+    private Region region;
 }

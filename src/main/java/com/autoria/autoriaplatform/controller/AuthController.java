@@ -20,14 +20,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@RequestParam String email, @RequestParam String password) {
-        // Проверяем пользователя и создаем токен
+
         String token = userService.authenticateUser(email, password);
         return ResponseEntity.ok(token);
     }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
-        // Регистрируем пользователя, передавая DTO
+
         userService.registerUser(userRegisterDTO);
         return ResponseEntity.status(201).body("User registered successfully");
     }

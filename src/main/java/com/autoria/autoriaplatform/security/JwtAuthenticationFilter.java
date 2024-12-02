@@ -1,6 +1,6 @@
 package com.autoria.autoriaplatform.security;
 
-import jakarta.servlet.Filter;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String getJwtFromRequest(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7);  // Убираем префикс "Bearer "
+            return header.substring(7);
         }
         return null;
     }
