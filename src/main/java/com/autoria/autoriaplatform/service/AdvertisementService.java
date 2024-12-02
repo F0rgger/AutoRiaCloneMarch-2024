@@ -1,4 +1,3 @@
-// AdvertisementService.java
 package com.autoria.autoriaplatform.service;
 
 import com.autoria.autoriaplatform.model.Advertisement;

@@ -1,4 +1,3 @@
-
 package com.autoria.autoriaplatform.controller;
 
 import com.autoria.autoriaplatform.dto.UserRegisterDTO;
@@ -30,7 +29,6 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
-        // Регистрируем нового пользователя и возвращаем его информацию в виде DTO
         UserResponseDTO userResponse = userService.registerUser(userRegisterDTO);
         return ResponseEntity.status(201).body(userResponse);
     }

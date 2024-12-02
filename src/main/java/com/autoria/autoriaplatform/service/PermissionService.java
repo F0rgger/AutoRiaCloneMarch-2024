@@ -1,4 +1,3 @@
-// PermissionService.java
 package com.autoria.autoriaplatform.service;
 
 import com.autoria.autoriaplatform.exception.PermissionNotFoundException;

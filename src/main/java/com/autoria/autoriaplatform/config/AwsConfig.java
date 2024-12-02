@@ -20,10 +20,10 @@ public class AwsConfig {
     @Value("${aws.region}")
     private String region;
 
-    @Bean(name = "awsS3Client")  // Переименуем бин
+    @Bean(name = "awsS3Client")
     public S3Client s3Client() {
         return S3Client.builder()
-                .region(Region.of(region))  // Не забудьте использовать правильный тип региона
+                .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretAccessKey)))
                 .build();
     }

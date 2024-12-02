@@ -24,8 +24,8 @@ public class S3Service {
     private static final Logger logger = Logger.getLogger(S3Service.class.getName());
 
     private final S3Client s3Client;
-    private final String bucketName = "your-bucket-name";  // Укажи имя твоего бакета
-    private final Region region = Region.of("us-east-1");  // Пример региона
+    private final String bucketName = "your-bucket-name";
+    private final Region region = Region.of("us-east-1");
 
     @Autowired
     public S3Service(S3Client s3Client) {
@@ -46,7 +46,6 @@ public class S3Service {
         logger.info("File uploaded to S3: " + file.getOriginalFilename());
     }
 
-    // Метод для скачивания файла из S3
     public ResponseInputStream<GetObjectResponse> downloadFile(String fileName) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
@@ -56,11 +55,11 @@ public class S3Service {
         return s3Client.getObject(getObjectRequest);
     }
 
-    // Создание S3Client с использованием региона
+
     @Bean
     public S3Client s3Client() {
         return S3Client.builder()
-                .region(region)  // Указываем регион
+                .region(region)
                 .build();
     }
 }

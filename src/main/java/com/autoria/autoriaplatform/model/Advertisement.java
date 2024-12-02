@@ -1,4 +1,3 @@
-
 package com.autoria.autoriaplatform.model;
 
 import jakarta.persistence.*;

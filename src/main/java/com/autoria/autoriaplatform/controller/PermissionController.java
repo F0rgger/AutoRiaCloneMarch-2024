@@ -1,4 +1,3 @@
-
 package com.autoria.autoriaplatform.controller;
 
 import com.autoria.autoriaplatform.model.Permission;

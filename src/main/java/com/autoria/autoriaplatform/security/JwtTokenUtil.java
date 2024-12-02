@@ -30,7 +30,7 @@ public class JwtTokenUtil {
         }
         JwtParser jwtParser = Jwts.parser()
                 .setSigningKey(jwtSecret)
-                .build(); // Build the JwtParser using the parserBuilder API
+                .build();
         Claims claims = jwtParser.parseClaimsJws(token).getBody();
         return claims.getSubject();
     }
@@ -40,7 +40,7 @@ public class JwtTokenUtil {
             JwtParser jwtParser = Jwts.parser()
                     .setSigningKey(jwtSecret)
                     .build();
-            jwtParser.parseClaimsJws(token); // Parse the token
+            jwtParser.parseClaimsJws(token);
             return true;
         } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException |
                  IllegalArgumentException e) {
