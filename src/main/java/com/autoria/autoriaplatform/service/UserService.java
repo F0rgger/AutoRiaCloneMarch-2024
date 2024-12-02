@@ -9,6 +9,7 @@ import com.autoria.autoriaplatform.security.JwtTokenUtil;
 import com.autoria.autoriaplatform.repository.UserRepository;
 import com.autoria.autoriaplatform.enums.ERole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +26,7 @@ public class UserService implements org.springframework.security.core.userdetail
     private final RoleService roleService;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenUtil jwtTokenUtil, RoleService roleService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtTokenUtil jwtTokenUtil, @Lazy RoleService roleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenUtil = jwtTokenUtil;
@@ -84,6 +85,7 @@ public class UserService implements org.springframework.security.core.userdetail
 
         return convertToUserResponseDTO(user);
     }
+
     public UserResponseDTO upgradeToPremium(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));

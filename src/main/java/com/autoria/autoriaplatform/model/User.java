@@ -27,6 +27,10 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private EAccountType accountType = EAccountType.BASIC;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -38,10 +42,6 @@ public class User implements UserDetails {
 
     @ManyToOne
     private Permission permission;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private EAccountType accountType = EAccountType.BASIC;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -78,6 +78,6 @@ public class User implements UserDetails {
     }
 
     public boolean canAddAdvertisement() {
-        return this.accountType == EAccountType.PREMIUM || advertisements.size() < 1;
+        return this.accountType.equals(EAccountType.PREMIUM) || advertisements.size() < 1;
     }
 }
